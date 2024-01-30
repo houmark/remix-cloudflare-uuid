@@ -1,3 +1,4 @@
+import { uuid } from "@cfworker/uuid";
 import {
   json,
   type LoaderFunctionArgs,
@@ -8,9 +9,10 @@ import { Form, useLoaderData } from "@remix-run/react";
 const key = "__my-key__";
 
 export async function loader({ context }: LoaderFunctionArgs) {
+  const id = uuid();
   const { MY_KV } = context.env;
   const value = await MY_KV.get(key);
-  return json({ value });
+  return json({ value, id });
 }
 
 export async function action({ request, context }: ActionFunctionArgs) {
@@ -32,7 +34,7 @@ export async function action({ request, context }: ActionFunctionArgs) {
 }
 
 export default function Index() {
-  const { value } = useLoaderData<typeof loader>();
+  const { value, id } = useLoaderData<typeof loader>();
   return (
     <div>
       <h1>Welcome to Remix</h1>
@@ -54,6 +56,7 @@ export default function Index() {
           </Form>
         </>
       )}
+      ID: {id}
     </div>
   );
 }
